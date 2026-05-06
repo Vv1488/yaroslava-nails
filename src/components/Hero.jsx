@@ -1,7 +1,9 @@
+import bg from '../assets/IMG_3440.JPG'
+
 function Hero() {
   return (
-    <section className="hero-section">
-      <div className="hero-content">
+    <section className="hero-section" style={{ backgroundImage: `url(${bg})` }}>
+      <div className="hero-overlay">
         <h1>Yaroslava Nails</h1>
         <p>Манікюр та покриття у Дніпрі</p>
         <a href="#booking" className="btn">Записатись</a>

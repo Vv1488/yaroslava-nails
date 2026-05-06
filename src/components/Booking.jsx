@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
 const days = ['Понеділок', 'Вівторок', 'Середа', 'Четвер', 'П\'ятниця', 'Субота']
-const times = ['10:00', '12:00', '14:00', '16:00', '18:00']
+const times = ['09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00']
 
 function Booking() {
   const [step, setStep] = useState(1)
@@ -10,10 +10,28 @@ function Booking() {
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
   const [done, setDone] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault()
-    setDone(true)
+    setLoading(true)
+    setError('')
+
+    try {
+      const res = await fetch('http://localhost:3001/api/bookings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, phone, day, time })
+      })
+
+      if (!res.ok) throw new Error('Помилка')
+      setDone(true)
+    } catch {
+      setError('Не вдалося відправити. Спробуйте пізніше.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   function handleReset() {
@@ -23,6 +41,7 @@ function Booking() {
     setName('')
     setPhone('')
     setDone(false)
+    setError('')
   }
 
   return (
@@ -92,9 +111,12 @@ function Booking() {
                 onChange={(e) => setPhone(e.target.value)}
                 required
               />
+              {error && <p className="booking-error">{error}</p>}
               <div className="form-buttons">
                 <button type="button" className="btn-outline" onClick={() => setStep(2)}>Назад</button>
-                <button type="submit" className="btn">Записатись</button>
+                <button type="submit" className="btn" disabled={loading}>
+                  {loading ? 'Відправка...' : 'Записатись'}
+                </button>
               </div>
             </div>
           )}
